@@ -1,13 +1,22 @@
 Dice[] dices = new Dice[5];
+boolean hold = false;
+int turn = 0;
+boolean order = false;
+boolean gameOver = false;
 
 void setup() {
   size(1600, 800);
   for(int i = 0; i < 5; i++) {
-    dices[0] = new Dice((int) (Math.random() * 480) + 350, (int) (Math.random() * 290) + 110);
+    dices[i] = new Dice();
+    dices[i].rollInBox(dices);
   }
 }
 
 void draw() {
+  if(gameOver) {
+    background(184, 12, 9);
+    return;
+  }
   background(152, 102, 52);
   noStroke();
   rectMode(RADIUS);
@@ -25,11 +34,9 @@ void draw() {
   rect(140, 400, 50, 50, 20);
   rect(140, 530, 50, 50, 20);
   rect(140, 660, 50, 50, 20);
-  rect(350, 110, 50, 50, 20);
-  rect(930, 110, 50, 50, 20);
-  rect(350, 690, 50, 50, 20);
-  rect(930, 690, 50, 50, 20);
-  rect(640, 400, 50, 50, 20);
+  for(Dice dice : dices) {
+    dice.render();
+  }
   textAlign(LEFT);
   textSize(28);
   fill(250, 169, 22);
@@ -38,7 +45,7 @@ void draw() {
   text("player 2", 1400, 80);
   textAlign(LEFT);
   fill(250, 169, 22);
-  text("2/12", 1060, 80);
+  text(turn + "/12", 1060, 80);
   fill(8, 15, 15);
   text("aces", 1060, 120);
   text("deuces", 1060, 165);
@@ -87,4 +94,23 @@ void draw() {
   text("0", 1400, 660);
   text("0", 1400, 705);
   text("0", 1400, 745);
+}
+
+void keyPressed() {
+  if(hold) return;
+  if(!order) {
+    turn++;
+  }
+  if(turn == 13) {
+    gameOver = true;
+  }
+  order = !order;
+  for(Dice dice : dices) {
+    dice.rollInBox(dices);
+  }
+  hold = true;
+}
+
+void keyReleased() {
+  hold = false;
 }
