@@ -1,8 +1,12 @@
-Dice[] dices = new Dice[5];
-boolean hold = false;
+boolean keyhold = false;
+boolean mousehold = false;
+
 int turn = 0;
 boolean order = false;
 boolean gameOver = false;
+
+Dice[] dices = new Dice[5];
+ArrayList<Dice> hold = new ArrayList<>();
 
 void setup() {
   size(1600, 800);
@@ -29,13 +33,16 @@ void draw() {
   fill(239, 239, 239);
   rect(1300, 400, 260, 360, 30);
   fill(239, 239, 239);
-  rect(140, 140, 50, 50, 20);
-  rect(140, 270, 50, 50, 20);
-  rect(140, 400, 50, 50, 20);
-  rect(140, 530, 50, 50, 20);
-  rect(140, 660, 50, 50, 20);
+  for(int i = 0; i < hold.size(); i++) {
+    rect(140, 140 + i, 50, 50, 20);
+    hold.get(i).render(140, 140 + 130 * i, hold.get(i).number);
+  }
   for(Dice dice : dices) {
-    dice.render();
+    if(dice.renderWithHover() && mousePressed) {
+      if(mousehold) continue;
+      if(hold.size() < 5) hold.add(new Dice(dice.number));
+      mousehold = true;
+    }
   }
   textAlign(LEFT);
   textSize(28);
@@ -97,20 +104,26 @@ void draw() {
 }
 
 void keyPressed() {
-  if(hold) return;
+  if(key != ' ') return;
+  if(keyhold) return;
   if(!order) {
     turn++;
   }
   if(turn == 13) {
     gameOver = true;
+    return;
   }
   order = !order;
   for(Dice dice : dices) {
     dice.rollInBox(dices);
   }
-  hold = true;
+  keyhold = true;
 }
 
 void keyReleased() {
-  hold = false;
+  keyhold = false;
+}
+
+void mouseReleased() {
+  mousehold = false;
 }
